@@ -2,7 +2,7 @@ import { web, IgnoreFile } from 'projen';
 const { awscdk } = require('projen');
 const { JobPermission } = require('projen/lib/github/workflows-model');
 const { UpgradeDependenciesSchedule } = require('projen/lib/javascript');
-const AUTOMATION_TOKEN = 'PROJEN_GITHUB_TOKEN';
+// const AUTOMATION_TOKEN = 'PROJEN_GITHUB_TOKEN';
 
 const project = new awscdk.AwsCdkTypeScriptApp({
   cdkVersion: '2.118.0',
@@ -87,11 +87,23 @@ const site = new web.NextJsTypeScriptProject({
     ],
     exclude: ['node_modules'],
   },
-  devDeps: ['ts-node', 'projen', '@types/node'],
+  projenDevDependency: true,
+  // depsUpgrade: true,
+  // depsUpgradeOptions: {
+  //   taskName: 'upgrade-site',
+  //   workflowOptions: {
+  //     labels: ['auto-approve', 'auto-merge'],
+  //     schedule: UpgradeDependenciesSchedule.WEEKLY,
+  //   },
+  // },
+  // autoApproveOptions: {
+  //   secret: 'GITHUB_TOKEN',
+  //   allowedUsernames: ['schuettc'],
+  // },
+  // autoApproveUpgrades: true,
+
   deps: ['@cloudscape-design/components', '@cloudscape-design/global-styles'],
 });
-
-site.synth();
 
 const common_exclude = [
   'docker-compose.yaml',
@@ -141,6 +153,7 @@ new IgnoreFile(site, '.dockerignore', {
   ],
 });
 
+// site.synth();
 const upgradeSite = project.github.addWorkflow('upgrade-site');
 upgradeSite.on({ schedule: [{ cron: '0 0 * * 1' }], workflowDispatch: {} });
 
@@ -171,7 +184,7 @@ upgradeSite.addJobs({
         name: 'Create Pull Request',
         uses: 'peter-evans/create-pull-request@v4',
         with: {
-          'token': '${{ secrets.' + AUTOMATION_TOKEN + ' }}',
+          'token': '${{ secrets.PROJEN_GITHUB_TOKEN}}',
           'commit-message': 'chore: upgrade site',
           'branch': 'auto/projen-upgrade',
           'title': 'chore: upgrade site',

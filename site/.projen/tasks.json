@@ -125,13 +125,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/react,@types/react-dom,projen,ts-node,typescript,@cloudscape-design/components,@cloudscape-design/global-styles,next,react,react-dom"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@types/react,@types/react-dom,projen,typescript,@cloudscape-design/components,@cloudscape-design/global-styles,next,react,react-dom"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @types/node @types/react @types/react-dom projen ts-node typescript @cloudscape-design/components @cloudscape-design/global-styles next react react-dom"
+          "exec": "yarn upgrade @types/node @types/react @types/react-dom constructs projen typescript @cloudscape-design/components @cloudscape-design/global-styles next react react-dom"
         },
         {
           "exec": "npx projen"
