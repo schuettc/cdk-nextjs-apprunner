@@ -14,7 +14,7 @@ export class AppRunnerResources extends Construct {
   constructor(scope: Construct, id: string, props: AppRunnerResourcesProps) {
     super(scope, id);
 
-    const { ecrRepository, sourceHash } = props;
+    const { ecrRepository } = props;
 
     const appRunnerRole = new Role(this, 'AppRunnerECRAccessRole', {
       assumedBy: new ServicePrincipal('build.apprunner.amazonaws.com'),
@@ -32,6 +32,6 @@ export class AppRunnerResources extends Construct {
     });
 
     this.service.addEnvironmentVariable('HOSTNAME', '0.0.0.0');
-    this.service.addEnvironmentVariable('SOURCE_HASH', sourceHash);
+    // this.service.addEnvironmentVariable('SOURCE_HASH', sourceHash);
   }
 }

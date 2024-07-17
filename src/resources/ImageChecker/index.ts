@@ -16,16 +16,16 @@ export const handler = async (
   const repositoryUri = process.env.REPOSITORY_URI!;
   const imageTag = process.env.IMAGE_TAG!;
 
-  if (event.RequestType === 'Create' || event.RequestType === 'Update') {
+  if (event.RequestType === 'Create') {
     try {
       // Get the current latest execution before triggering a new one
-      const latestExecutionBefore = await getLatestExecution(pipelineName);
+      // const latestExecutionBefore = await getLatestExecution(pipelineName);
 
       // For update, we need to wait for a new execution to start
-      if (event.RequestType === 'Update') {
-        console.log('Waiting for a new pipeline execution to start...');
-        await waitForNewExecution(pipelineName, latestExecutionBefore);
-      }
+      // if (event.RequestType === 'Update') {
+      //   console.log('Waiting for a new pipeline execution to start...');
+      //   await waitForNewExecution(pipelineName, latestExecutionBefore);
+      // }
 
       await waitForPipelineExecution(pipelineName);
       await checkImageAvailability(repositoryUri, imageTag);
@@ -43,15 +43,13 @@ export const handler = async (
         Reason: `Failed to wait for image: ${error}`,
       };
     }
-  } else if (event.RequestType === 'Delete') {
+  } else {
     return {
       PhysicalResourceId: event.PhysicalResourceId,
       Status: 'SUCCESS',
       Data: {},
     };
   }
-
-  throw new Error(`Unsupported request type: ${event}`);
 };
 
 async function getLatestExecution(
@@ -62,24 +60,24 @@ async function getLatestExecution(
   return response.pipelineExecutionSummaries?.[0] || null;
 }
 
-async function waitForNewExecution(
-  pipelineName: string,
-  previousExecution: PipelineExecutionSummary | null,
-): Promise<void> {
-  while (true) {
-    const latestExecution = await getLatestExecution(pipelineName);
-    if (
-      latestExecution &&
-      (!previousExecution ||
-        latestExecution.pipelineExecutionId !==
-          previousExecution.pipelineExecutionId)
-    ) {
-      console.log('New pipeline execution started');
-      return;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-  }
-}
+// async function waitForNewExecution(
+//   pipelineName: string,
+//   previousExecution: PipelineExecutionSummary | null,
+// ): Promise<void> {
+//   while (true) {
+//     const latestExecution = await getLatestExecution(pipelineName);
+//     if (
+//       latestExecution &&
+//       (!previousExecution ||
+//         latestExecution.pipelineExecutionId !==
+//           previousExecution.pipelineExecutionId)
+//     ) {
+//       console.log('New pipeline execution started');
+//       return;
+//     }
+//     await new Promise((resolve) => setTimeout(resolve, 10000));
+//   }
+// }
 
 async function waitForPipelineExecution(pipelineName: string): Promise<void> {
   while (true) {

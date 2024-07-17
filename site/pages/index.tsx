@@ -43,7 +43,7 @@ const Home: React.FC = () => {
   return (
     <Layout>
       <SpaceBetween size='l'>
-        <Box variant='h2'>Dashboard - Version 1</Box>
+        <Box variant='h2'>Dashboard - Version 2</Box>
         <Cards
           cardDefinition={{
             header: (item) => (item as CardItem).name,
