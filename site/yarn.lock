@@ -22,7 +22,7 @@
     "@juggle/resize-observer" "^3.3.1"
     tslib "^2.3.1"
 
-"@cloudscape-design/components@^3.0.663":
+"@cloudscape-design/components@^3.0.684":
   version "3.0.684"
   resolved "https://registry.yarnpkg.com/@cloudscape-design/components/-/components-3.0.684.tgz#d44614882376ee185bc19713081430ed6fbdf450"
   integrity sha512-5HXQFv4/XW0mruEloeZcLI6Rpez1cv00NyrrbXVvYqWocsYI6c5MJRTCk26zZElOoLTNoCzpbxx6/aJEmeubCA==
@@ -47,7 +47,7 @@
     tslib "^2.4.0"
     weekstart "^1.1.0"
 
-"@cloudscape-design/global-styles@^1.0.27":
+"@cloudscape-design/global-styles@^1.0.31":
   version "1.0.31"
   resolved "https://registry.yarnpkg.com/@cloudscape-design/global-styles/-/global-styles-1.0.31.tgz#ae48f64a5243c0dc6babc46f278eab9b755d5456"
   integrity sha512-8OrgNAi2VC2G+DaEjtMScWIeW1KD1YNHuqjXT0mYaU/Yl6zbCVNRObsqDcbcEMwUE/XBZ/LdX+/sabn/IPl2Eg==
@@ -206,9 +206,9 @@
     tslib "^2.4.0"
 
 "@types/node@^16":
-  version "16.18.101"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.101.tgz#1e3065490c9ea01a05baf23eb4ac5be985eedc19"
-  integrity sha512-AAsx9Rgz2IzG8KJ6tXd6ndNkVcu+GYB6U/SnFAaokSPNx2N7dcIIfnighYUNumvj6YS2q39Dejz5tT0NCV7CWA==
+  version "16.18.102"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.102.tgz#4d8afd633a9bab39651929a7edebce430a19a74d"
+  integrity sha512-eSe2YwGCcRjqPidxfm20IAq02krERWcIIJW4FNPkU0zQLbc4L9pvhsmB0p6UJecjEf0j/E2ERHsKq7madvthKw==
 
 "@types/prop-types@*":
   version "15.7.12"
@@ -356,7 +356,7 @@ nanoid@^3.3.6:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.7.tgz#d0c301a691bc8d54efa0a2226ccf3fe2fd656bd8"
   integrity sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==
 
-next@^14.2.4:
+next@^14.2.5:
   version "14.2.5"
   resolved "https://registry.yarnpkg.com/next/-/next-14.2.5.tgz#afe4022bb0b752962e2205836587a289270efbea"
   integrity sha512-0f8aRfBVL+mpzfBjYfQuLWh2WyAwtJXCRfkPF4UJ5qd2YwrHczsrSzXU4tRMV0OAxR8ZJZWPFn6uhSC56UTsLA==
@@ -478,7 +478,7 @@ tslib@^2.0.0, tslib@^2.3.1, tslib@^2.4.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.3.tgz#0438f810ad7a9edcde7a241c3d80db693c8cbfe0"
   integrity sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==
 
-typescript@^5.4.5:
+typescript@^5.5.3:
   version "5.5.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.5.3.tgz#e1b0a3c394190838a0b168e771b0ad56a0af0faa"
   integrity sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==
