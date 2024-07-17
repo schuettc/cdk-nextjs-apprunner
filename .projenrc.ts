@@ -87,7 +87,7 @@ const site = new web.NextJsTypeScriptProject({
     ],
     exclude: ['node_modules'],
   },
-  devDeps: ['ts-node', '@types/node', 'projen'],
+  devDeps: ['ts-node', '@types/node'],
   projenDevDependency: true,
   // depsUpgrade: true,
   // depsUpgradeOptions: {
@@ -180,6 +180,7 @@ upgradeSite.addJobs({
         run: 'yarn install --check-files --frozen-lockfile',
         workingDirectory: 'site',
       },
+      { run: 'yarn add projen -y', workingDirectory: 'site' },
       { run: 'npx projen upgrade', workingDirectory: 'site' },
       {
         name: 'Create Pull Request',
