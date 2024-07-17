@@ -19,11 +19,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-      - run: yarn install --check-files --frozen-lockfile
+      - name: Install root project dependencies
+        run: yarn install --frozen-lockfile
+      - name: Install site project dependencies
+        run: yarn install --frozen-lockfile
         working-directory: site
-      - run: yarn add projen -y
-        working-directory: site
-      - run: npx projen upgrade
+      - name: Upgrade site project
+        run: npx projen upgrade
         working-directory: site
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4

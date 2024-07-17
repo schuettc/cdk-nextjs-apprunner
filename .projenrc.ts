@@ -177,11 +177,19 @@ upgradeSite.addJobs({
         },
       },
       {
-        run: 'yarn install --check-files --frozen-lockfile',
+        name: 'Install root project dependencies',
+        run: 'yarn install --frozen-lockfile',
+      },
+      {
+        name: 'Install site project dependencies',
+        run: 'yarn install --frozen-lockfile',
         workingDirectory: 'site',
       },
-      { run: 'yarn add projen -y', workingDirectory: 'site' },
-      { run: 'npx projen upgrade', workingDirectory: 'site' },
+      {
+        name: 'Upgrade site project',
+        run: 'npx projen upgrade',
+        workingDirectory: 'site',
+      },
       {
         name: 'Create Pull Request',
         uses: 'peter-evans/create-pull-request@v4',
