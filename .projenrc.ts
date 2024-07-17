@@ -87,6 +87,7 @@ const site = new web.NextJsTypeScriptProject({
     ],
     exclude: ['node_modules'],
   },
+  devDeps: ['ts-node'],
   projenDevDependency: true,
   // depsUpgrade: true,
   // depsUpgradeOptions: {
