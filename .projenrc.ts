@@ -102,6 +102,7 @@ const site = new web.NextJsTypeScriptProject({
   },
   deps: ['@cloudscape-design/components', '@cloudscape-design/global-styles'],
 });
+
 site.synth();
 
 const common_exclude = [
@@ -118,7 +119,6 @@ const common_exclude = [
   'config.json',
 ];
 
-// Create .dockerignore file
 new IgnoreFile(site, '.dockerignore', {
   ignorePatterns: [
     'node_modules',

@@ -37,11 +37,6 @@ const cardItems: CardItem[] = [
     description: 'This is the third card',
     value: 'Value 3',
   },
-  {
-    name: 'Card 4',
-    description: 'This is the third card',
-    value: 'Value 4',
-  },
 ];
 
 const Home: React.FC = () => {

@@ -1,191 +1,223 @@
-# ECS Hosted Whisper Streaming using gRPC
+# NextJS App deployed to App Runner via CDK with GitHub Actions
 
-In this demo, we will see how to build an application that will accept streaming audio sent via Websockets and have the audio transcribed using [OpenAI Whisper](https://openai.com/research/whisper). This demo builds off of the previous [gRPC Streaming Audio with Node](https://subaud.io/blog/node-grpc-server) blog post and [hosted-whisper-streaming](https://github.com/schuettc/hosted-whisper-streaming). In this demo, the ECS uses an [EC2 based deployment that supports GPUs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-gpu.html) and includes a client that can be used with multiple participants using the Amazon Chime SDK. This requires several changes to the deployment that will be highlighted.
+In this demo we'll see how to deploy a NextJS application to AWS App Runner via CDK using GitHub Actions. This demo will combine and showcase several useful tools to help with deployments. Much of this could also be done using a CDK Pipeline. For smaller and simpler use cases, this can be a lighter weight way of doing it, but is more fragile. This is a simpler and cheaper version the previous [CDK Pipeline for ECS hosted NextJS App](https://subaud.io/blog/cdk-pipeline-ecs-hosted-nextjs) while still supporting the main features in it.
 
 ## Overview
 
-![Overview](/images/StreamingWhisperWithClient.png)
+![Overview](/images/Overview.png)
 
-The basic concepts of the previous [gRPC Streaming Audio with Node](https://subaud.io/blog/node-grpc-server) and [hosted-whisper-streaming](https://github.com/schuettc/hosted-whisper-streaming) remain largely the same. An audio stream will be generated from a hosted Websocket client and sent to a Websockets server hosted in [Amazon Elastic Container Service (ECS)](https://aws.amazon.com/ecs/). The server will transcribe the audio and return the results to the client.
+The core of this demo is the mechanism to take a local [NextJS](https://nextjs.org/) app, upload it to an S3 bucket, build it using Docker and deploy it to [AWS App Runner](https://aws.amazon.com/apprunner/). By using [AWS CodePipeline](https://aws.amazon.com/codepipeline/) and [AWS CodeBuild](https://aws.amazon.com/codebuild/) to build the [Docker](https://www.docker.com/) image, we eliminate the need to have Docker running locally for our deployment. This allows us to use GitHub actions to use CDK to deploy this application.
 
-## ECS Deployment
+### Uploading to S3
 
 ```typescript
-const cluster = new Cluster(this, 'cluster', {
-  vpc: props.vpc,
+const dockerAsset = new Asset(this, 'DockerAsset', {
+  path: './site',
+  exclude: ['**/node_modules/**', '**/lib/**', '/**/.next/**'],
+  ignoreMode: IgnoreMode.GIT,
 });
+```
 
-const launchTemplate = new LaunchTemplate(this, 'LaunchTemplate', {
-  machineImage: EcsOptimizedImage.amazonLinux2(AmiHardwareType.GPU),
-  instanceType: new InstanceType('g4dn.2xlarge'),
-  requireImdsv2: true,
-  userData: UserData.forLinux(),
-  securityGroup: ecsServiceSecurityGroup,
-  role: ec2Role,
-  blockDevices: [
+By using [Asset](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3_assets.Asset.html) we are able to Zip and upload all of the relevant files in our NextJS application to an S3 bucket managed by CDK. We will use this S3 bucket as the trigger for our CodePipeline.
+
+### CodePipeline
+
+The actual pipeline for this demo is relatively simple. Using polling on the S3 bucket, it will download the Zip file from S3, extract the files, and execute a build on them.
+
+```typescript
+this.pipeline = new Pipeline(this, 'Pipeline', {
+  stages: [
     {
-      deviceName: '/dev/xvda',
-      volume: BlockDeviceVolume.ebs(300),
+      stageName: 'Source',
+      actions: [
+        new S3SourceAction({
+          actionName: 'S3Source',
+          bucket: dockerAsset.bucket,
+          bucketKey: dockerAsset.s3ObjectKey,
+          output: sourceOutput,
+        }),
+      ],
+    },
+    {
+      stageName: 'Build',
+      actions: [
+        new CodeBuildAction({
+          actionName: 'DockerBuild',
+          project: codeBuildProject,
+          input: sourceOutput,
+          outputs: [buildOutput],
+        }),
+      ],
     },
   ],
 });
-
-const autoScalingGroup = new AutoScalingGroup(this, 'AutoScalingGroup', {
-  vpc: props.vpc,
-  launchTemplate: launchTemplate,
-  desiredCapacity: 1,
-  minCapacity: 1,
-  maxCapacity: 2,
-  vpcSubnets: { subnetType: SubnetType.PUBLIC },
-});
-
-const capacityProvider = new AsgCapacityProvider(this, 'AsgCapacityProvider', {
-  autoScalingGroup,
-});
-
-cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
-Some changes are required in the CDK to use an EC2 based deployment of ECS. Here we see the [Launch Template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) that defines the EC2 instance parameters. An autoscaling group is also configured to allow this demo to scale up if needed.
+The buildSpec for this involves three basic steps:
+
+1. Log in to ECR
+2. Execute `docker build`
+3. Execute `docker push`
 
 ```typescript
-const taskDefinition = new Ec2TaskDefinition(this, 'taskDefinition', {
-  taskRole: hostedWhisperStreamingRole,
-  networkMode: NetworkMode.BRIDGE,
-});
-
-taskDefinition.addContainer('HostedWhisperStreaming', {
-  image: ContainerImage.fromAsset('src/resources/whisperServer'),
-  environment: {
-    ECS_LOGLEVEL: props.logLevel,
+buildSpec: BuildSpec.fromObject({
+  version: '0.2',
+  phases: {
+    pre_build: {
+      commands: [
+        'echo Logging in to Amazon ECR...',
+        'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
+      ],
+    },
+    build: {
+      commands: [
+        'echo Build started on `date`',
+        'echo Building the Docker image...',
+        'docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .',
+        'docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG',
+      ],
+    },
+    post_build: {
+      commands: [
+        'echo Build completed on `date`',
+        'echo Pushing the Docker image...',
+        'docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG',
+      ],
+    },
   },
-  gpuCount: 1,
-  memoryLimitMiB: 31690,
-  cpu: 8192,
-  portMappings: [{ containerPort: 50051, hostPort: 50051 }],
-  logging: new AwsLogDriver({ streamPrefix: 'HostedWhisperStreaming' }),
+}),
+```
+
+With these three steps, we are able to create a Docker image and push to our [Amazon ECR repository](https://docs.aws.amazon.com/ecr/). This is what will be consumed by our App Runner service.
+
+### ImageChecker
+
+In order to make sure the Docker image has been created and is available for the App Runner service, we will create a Lambda backed Custom Resource that will periodically check the pipeline to ensure it has completed successfully. When it has, the Customer Resource will complete and the CDK can continue. We can enforce this by adding a dependency to the Customer Resource to the App Runner service.
+
+```typescript
+appRunnerService.service.node.addDependency(imageChecker);
+```
+
+Now the CDK will not start deploying the App Runner service until the Customer Resource has completed.
+
+### App Runner
+
+Finally, we will create the App Runner service and automatically deploy the image.
+
+```typescript
+this.service = new apprunnerAlpha.Service(this, 'Service', {
+  source: apprunnerAlpha.Source.fromEcr({
+    imageConfiguration: { port: 3000 },
+    repository: ecrRepository.repository,
+    tagOrDigest: 'latest',
+  }),
+  autoDeploymentsEnabled: true,
+  accessRole: appRunnerRole,
+});
+```
+
+## Projen
+
+To help manage this project, we will be using [projen](https://projen.io/).
+
+### Subproject
+
+In addition to the main project, we are also using a subproject to manage the NextJS application with a `parent` of the main project.
+
+```typescript
+const site = new web.NextJsTypeScriptProject({
+  parent: project,
+  defaultReleaseBranch: 'main',
+  name: 'cdk-nextjs-apprunner-site',
+  outdir: 'site',
+  projenrcTs: true,
+  tailwind: false,
+  tsconfig: {
+    compilerOptions: {
+      rootDir: '.',
+      baseUrl: '.',
+    },
+    include: [
+      'pages/**/*.ts',
+      'pages/**/*.tsx',
+      'components/**/*.ts',
+      'components/**/*.tsx',
+      '**/*.ts',
+      '**/*.tsx',
+      'next-env.d.ts',
+    ],
+    exclude: ['node_modules'],
+  },
+  deps: ['@cloudscape-design/components', '@cloudscape-design/global-styles'],
 });
 
-this.ecsService = new Ec2Service(this, 'ECSService', {
-  cluster: cluster,
-  taskDefinition: taskDefinition,
-  capacityProviderStrategies: [
-    { capacityProvider: capacityProvider.capacityProviderName, weight: 1 },
-  ],
+site.synth();
+```
+
+### CDK Deploy GitHub Action
+
+Because we are using CodeBuild to build the Docker image, we can use GitHub actions to start the deploy process. To do this with projen, we will create a new workflow. This will be added to the existing actions and trigger on a merge or push to `main`.
+
+```typescript
+const cdkDeploy = project.github.addWorkflow('cdk-deploy');
+cdkDeploy.on({
+  push: { branches: ['main'] },
+  pullRequest: { branches: ['main'], types: ['closed'] },
+});
+
+cdkDeploy.addJobs({
+  deploy: {
+    runsOn: ['ubuntu-latest'],
+    name: 'Deploy CDK Stack',
+    permissions: {
+      actions: JobPermission.WRITE,
+      contents: JobPermission.READ,
+      idToken: JobPermission.WRITE,
+    },
+    if: "github.event.pull_request.merged == true || github.event_name == 'push'",
+    steps: [
+      { uses: 'actions/checkout@v3' },
+      {
+        name: 'Setup Node.js',
+        uses: 'actions/setup-node@v3',
+        with: {
+          'node-version': '18',
+        },
+      },
+      { run: 'yarn install --frozen-lockfile' },
+      {
+        name: 'Configure AWS Credentials',
+        uses: 'aws-actions/configure-aws-credentials@v4',
+        with: {
+          'aws-access-key-id': '${{ secrets.AWS_ACCESS_KEY_ID }}',
+          'aws-secret-access-key': '${{ secrets.AWS_SECRET_ACCESS_KEY }}',
+          'aws-region': 'us-east-1',
+          'role-session-name': 'GitHubActionsCDKDeploy',
+        },
+      },
+      {
+        name: 'CDK Diff',
+        run: 'npx cdk diff',
+      },
+      {
+        name: 'CDK Deploy',
+        run: 'npx cdk deploy --all --require-approval never',
+      },
+    ],
+  },
 });
 ```
 
-Next we configure the [Task Definition](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html) that will use the included Docker container image.
+### AWS Credentials
 
-## Docker Image
-
-```Dockerfile
-FROM --platform=linux/amd64 nvidia/cuda:12.2.2-cudnn8-runtime-ubuntu22.04 AS base
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3.10-dev python3-pip python3.10-venv libsndfile1 build-essential curl git  && \
-    rm -rf /var/lib/apt/lists/*
-
-FROM base AS builder
-
-COPY src/requirements.txt ./
-
-RUN pip3 install --upgrade pip setuptools wheel && \
-    pip3 install --user -r requirements.txt && \
-    pip3 install --user git+https://github.com/openai/whisper.git
-
-FROM base
-ENV MODEL=${MODEL}
-ENV LOG_LEVEL=${LOG_LEVEL}
-
-COPY --from=builder /root/.local /root/.local
-COPY src/* ./
-RUN chmod +x /entrypoint.sh
-
-EXPOSE 50051
-
-ENTRYPOINT ["/entrypoint.sh"]
-
-
-```
-
-The Dockerfile included creates a Docker image that uses the [nvidia/cuda Docker image](https://hub.docker.com/r/nvidia/cuda/) as the base. This image will allow us to use the GPUs on the EC2 instance.
-
-The `pip3 install` commands are particularly important when using this image. These will update and install the necessary tools to install and configure Whisper. In order to ensure the model is downloaded and installed, `python3 -c "import whisper; whisper.load_model('base')"` is run as part of the build.
-
-As part of the `entrypoint.sh` script, we will be sure to set the correct path for the cuDNN libraries.
+In order to use this feature, you will need to create a user in your AWS account that has sufficient permissions to deploy the CDK. Using the ACCESS_KEY_ID and SECRET_ACCESS_KEY generated for this user, GitHub can deploy the CDK. To create a user with permissions you can run:
 
 ```bash
-export LD_LIBRARY_PATH=`python3 -c 'import os; import nvidia.cublas.lib; import nvidia.cudnn.lib; print(os.path.dirname(nvidia.cublas.lib.__file__) + ":" + os.path.dirname(nvidia.cudnn.lib.__file__))'`
+./setup_aws_cdk_deploy
 ```
 
-This solves the `Could not load library libcudnn_ops_infer.so.8. Error: libcudnn_ops_infer.so.8: cannot open shared object file: No such file or directory` issue that is caused by the `LD_LIBRARY_PATH` not containing the correct locations for the libraries.
+The output will contain an ACCESS_KEY_ID and SECRET_ACCESS_KEY that can be added to your GitHub repo as secrets.
 
-Finally, we will start the server.
+![GitHubSecrets](/images/GitHubSecrets.png)
 
-```bash
-python3 server.py
-```
-
-## Whisper Server
-
-The Whisper server is started and audio chunks are delivered to the transcribe_handler.
-
-```python
-async def start_server():
-    # Create an aiohttp application
-    app = web.Application()
-    app.router.add_get("/healthcheck", healthcheck)
-
-    # Start the aiohttp server
-    runner = web.AppRunner(app)
-    await runner.setup()
-    http_site = web.TCPSite(runner, "0.0.0.0", 8080)
-    await http_site.start()
-    logger.info(f"HTTP server started on http://0.0.0.0:8080")
-
-    # Start the WebSocket server
-    ws_server = await websockets.serve(transcribe_handler, "0.0.0.0", 8765)
-    logger.info(f"WebSocket server started on ws://0.0.0.0:8765")
-
-    # Run both servers concurrently
-    await asyncio.gather(
-        ws_server.wait_closed(), asyncio.Future()  # This will run forever
-    )
-```
-
-The AudioTranscriberServicer will be used to process the audio stream and return the transcriptions to the client. Whisper does not natively support streaming audio, so we must break the streamed audio into chunks that Whisper can use. To do this, audio processor will process the audio frames and use VAD to detect speech segments. These frames are buffered until a non-speech frame is encountered. When this happens, the frames are joined into a chunk. If the chunk is long enough, it is processed by [faster-whisper](https://github.com/SYSTRAN/faster-whisper) using a model. This allows for rapid transcription of streaming audio while allowing Whisper to provide the best results.
-
-## Notes and Warnings
-
-Because this deployment uses GPU based instance(s), be sure to check the [prices of the instances](https://aws.amazon.com/ec2/pricing/on-demand/) that will be used.
-
-![Pricing](/images/Pricing.png)
-
-## Testing
-
-This demo requires a [domain hosted in Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/registrar.html) so that a certificate can be associated with the [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version) listener. To configure the domain within the deployment, create a `.env` file with a `DOMAIN_NAME=` associated with a [Hosted Zone Name](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-working-with.html) in the account. We will also use a `HOST_NAME=` to identify the host name. The `.env` should look like this:
-
-```
-HOST_NAME=transcriber
-DOMAIN_NAME=example.com
-MODEL=large
-```
-
-Once the `.env` has been configured, you can deploy the CDK from the cloned repo:
-
-```bash
-yarn deploy
-```
-
-### Client
-
-Also included is a client that can be used with multiple participants using the Amazon Chime SDK. This application is deployed to AppRunner and can be accessed by using the `HostedWhisperStreamingWithClient.AppRunnerServiceUrl` in the CDK output. To use the client, enter a number in the upper box, and click `Join Meeting`. Others can join the same meeting by entering the same number on their client.
-
-## Translation
-
-Also included is a mechanism to Translate the Transcript using Amazon Bedrock. In this demo, it will only translate between English and Welsh, but other languages could be configured. The client receives the transcription from the Whisper server and makes a request to Bedrock for the translation of that. Once the translation is complete, both native language and translated language are sent to the other participants through the Amazon Chime SDK data messaging feature. The result is that all parties will be able to see the original and translated language in their client.
-
-## Cleanup
-
-In order to delete this CDK, you should remove the Auto Scaling Group first. Once that is done, you can delete the Stack from Cloudformation.
+The policy attached to this user has extensive permissions so care must be taken with this ACCESS_KEY_ID.
