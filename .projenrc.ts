@@ -56,6 +56,14 @@ project.eslint.addOverride({
   },
 });
 
+project.eslint.addOverride({
+  files: ['src/resources/**/*.ts', 'src/*.ts', 'site/src/**/*.tsx'],
+  rules: {
+    '@typescript-eslint/no-require-imports': 'off',
+    'import/no-extraneous-dependencies': 'off',
+  },
+});
+
 const site = new web.NextJsTypeScriptProject({
   parent: project,
   defaultReleaseBranch: 'main',

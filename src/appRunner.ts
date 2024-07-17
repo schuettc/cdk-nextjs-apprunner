@@ -1,4 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as apprunnerAlpha from '@aws-cdk/aws-apprunner-alpha';
 import { CustomResource, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import {
@@ -7,13 +10,12 @@ import {
   Source,
   LinuxBuildImage,
 } from 'aws-cdk-lib/aws-codebuild';
-import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
+import { Artifact, Pipeline, PipelineType } from 'aws-cdk-lib/aws-codepipeline';
 import {
   CodeBuildAction,
   S3SourceAction,
 } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Repository } from 'aws-cdk-lib/aws-ecr';
-
 import {
   Effect,
   PolicyStatement,
@@ -42,6 +44,8 @@ export class AppRunnerResources extends Construct {
     const dockerAsset = new Asset(this, 'DockerAsset', {
       path: './site',
     });
+
+    const sourceHash = this.calculateSourceHash('./site');
 
     const codeBuildProject = new Project(this, 'DockerBuildProject', {
       buildSpec: BuildSpec.fromObject({
@@ -104,6 +108,7 @@ export class AppRunnerResources extends Construct {
     const buildOutput = new Artifact();
 
     const pipeline = new Pipeline(this, 'DockerBuildPipeline', {
+      pipelineType: PipelineType.V2,
       stages: [
         {
           stageName: 'Source',
@@ -159,6 +164,9 @@ export class AppRunnerResources extends Construct {
         serviceToken: new Provider(this, 'ImageAvailabilityProvider', {
           onEventHandler: waitForImageLambda,
         }).serviceToken,
+        properties: {
+          SourceHash: sourceHash,
+        },
       },
     );
 
@@ -183,7 +191,33 @@ export class AppRunnerResources extends Construct {
       },
     );
     this.appRunnerService.addEnvironmentVariable('HOSTNAME', '0.0.0.0');
+    this.appRunnerService.addEnvironmentVariable('SOURCE_HASH', sourceHash);
 
     this.appRunnerService.node.addDependency(imageAvailabilityCheck);
+  }
+
+  private calculateSourceHash(directory: string): string {
+    const hash = crypto.createHash('md5');
+    const files = this.getAllFiles(directory);
+    files.forEach((file) => {
+      const content = fs.readFileSync(file);
+      hash.update(content);
+    });
+    return hash.digest('hex');
+  }
+
+  private getAllFiles(directory: string): string[] {
+    let results: string[] = [];
+    const files = fs.readdirSync(directory);
+    for (const file of files) {
+      const filePath = path.join(directory, file);
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory()) {
+        results = results.concat(this.getAllFiles(filePath));
+      } else {
+        results.push(filePath);
+      }
+    }
+    return results;
   }
 }
