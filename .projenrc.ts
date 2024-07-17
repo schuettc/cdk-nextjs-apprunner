@@ -71,19 +71,6 @@ const site = new web.NextJsTypeScriptProject({
   outdir: 'site',
   projenrcTs: true,
   tailwind: false,
-  depsUpgradeOptions: {
-    workflow: true,
-    workflowOptions: {
-      labels: ['auto-approve', 'auto-merge'],
-      schedule: UpgradeDependenciesSchedule.WEEKLY,
-    },
-  },
-  autoApproveOptions: {
-    secret: 'GITHUB_TOKEN',
-    allowedUsernames: ['schuettc'],
-  },
-  autoApproveUpgrades: true,
-  depsUpgrade: true,
   tsconfig: {
     compilerOptions: {
       rootDir: '.',
@@ -178,7 +165,7 @@ upgradeSite.addJobs({
         run: 'yarn install --check-files --frozen-lockfile',
         workingDirectory: 'site',
       },
-      { run: 'yarn upgrade', workingDirectory: 'site' },
+      { run: 'npx projen upgrade', workingDirectory: 'site' },
       {
         name: 'Create Pull Request',
         uses: 'peter-evans/create-pull-request@v4',

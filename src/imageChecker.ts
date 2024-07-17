@@ -10,7 +10,6 @@ import { ECRRepositoryResources } from './ecrRepository';
 interface ImageAvailabilityCheckerProps {
   pipeline: CodePipelineResources;
   ecrRepository: ECRRepositoryResources;
-  sourceHash: string;
 }
 
 export class ImageAvailabilityChecker extends Construct {
@@ -21,7 +20,7 @@ export class ImageAvailabilityChecker extends Construct {
   ) {
     super(scope, id);
 
-    const { pipeline, ecrRepository, sourceHash } = props;
+    const { pipeline, ecrRepository } = props;
 
     const waitForImageLambda = new NodejsFunction(this, 'WaitForImageLambda', {
       entry: './src/resources/ImageChecker/index.ts',
@@ -51,9 +50,6 @@ export class ImageAvailabilityChecker extends Construct {
       serviceToken: new Provider(this, 'ImageAvailabilityProvider', {
         onEventHandler: waitForImageLambda,
       }).serviceToken,
-      properties: {
-        SourceHash: sourceHash,
-      },
     });
   }
 }

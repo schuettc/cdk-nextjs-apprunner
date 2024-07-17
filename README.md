@@ -8,7 +8,7 @@ In this demo we'll see how to deploy a NextJS application to AWS App Runner via 
 
 The core of this demo is the mechanism to take a local [NextJS](https://nextjs.org/) app, upload it to an S3 bucket, build it using Docker and deploy it to [AWS App Runner](https://aws.amazon.com/apprunner/). By using [AWS CodePipeline](https://aws.amazon.com/codepipeline/) and [AWS CodeBuild](https://aws.amazon.com/codebuild/) to build the [Docker](https://www.docker.com/) image, we eliminate the need to have Docker running locally for our deployment. This allows us to use GitHub actions to use CDK to deploy this application.
 
-### Uploading to S3
+## Uploading to S3
 
 ```typescript
 const dockerAsset = new Asset(this, 'DockerAsset', {
@@ -20,7 +20,7 @@ const dockerAsset = new Asset(this, 'DockerAsset', {
 
 By using [Asset](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3_assets.Asset.html) we are able to Zip and upload all of the relevant files in our NextJS application to an S3 bucket managed by CDK. We will use this S3 bucket as the trigger for our CodePipeline.
 
-### CodePipeline
+## CodePipeline
 
 The actual pipeline for this demo is relatively simple. Using polling on the S3 bucket, it will download the Zip file from S3, extract the files, and execute a build on them.
 
@@ -90,7 +90,7 @@ buildSpec: BuildSpec.fromObject({
 
 With these three steps, we are able to create a Docker image and push to our [Amazon ECR repository](https://docs.aws.amazon.com/ecr/). This is what will be consumed by our App Runner service.
 
-### ImageChecker
+## ImageChecker
 
 In order to make sure the Docker image has been created and is available for the App Runner service, we will create a Lambda backed Custom Resource that will periodically check the pipeline to ensure it has completed successfully. When it has, the Customer Resource will complete and the CDK can continue. We can enforce this by adding a dependency to the Customer Resource to the App Runner service.
 
@@ -98,9 +98,9 @@ In order to make sure the Docker image has been created and is available for the
 appRunnerService.service.node.addDependency(imageChecker);
 ```
 
-Now the CDK will not start deploying the App Runner service until the Customer Resource has completed.
+Now the CDK will not start deploying the App Runner service until the Customer Resource has completed. This will only run on the initial build. On updates, when a new image is pushed to ECR after the build process completes, App Runner will automatically deploy the updated image.
 
-### App Runner
+## App Runner
 
 Finally, we will create the App Runner service and automatically deploy the image.
 
@@ -114,6 +114,12 @@ this.service = new apprunnerAlpha.Service(this, 'Service', {
   autoDeploymentsEnabled: true,
   accessRole: appRunnerRole,
 });
+```
+
+To ensure this works correctly with NextJS we will add a `HOSTNAME` environment variable to the App Runner service.
+
+```typescript
+this.service.addEnvironmentVariable('HOSTNAME', '0.0.0.0');
 ```
 
 ## Projen

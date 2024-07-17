@@ -1,6 +1,3 @@
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as path from 'path';
 import { App, CfnOutput, Stack, StackProps, IgnoreMode } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
@@ -25,8 +22,6 @@ export class NextJSAppRunner extends Stack {
       ignoreMode: IgnoreMode.GIT,
     });
 
-    const sourceHash = this.calculateSourceHash('./site');
-
     const pipeline = new CodePipelineResources(this, 'DockerBuildPipeline', {
       ecrRepository,
       dockerAsset,
@@ -38,13 +33,11 @@ export class NextJSAppRunner extends Stack {
       {
         pipeline,
         ecrRepository,
-        sourceHash,
       },
     );
 
     const appRunnerService = new AppRunnerResources(this, 'AppRunnerService', {
       ecrRepository,
-      sourceHash,
     });
 
     appRunnerService.service.node.addDependency(imageChecker);
@@ -52,35 +45,10 @@ export class NextJSAppRunner extends Stack {
     new CfnOutput(this, 'AppServiceURL', {
       value: appRunnerService.service.serviceUrl,
     });
-    new CfnOutput(this, 'SourceHash', { value: sourceHash });
+
     new CfnOutput(this, 'ImageURI', {
       value: ecrRepository.repository.repositoryUri,
     });
-  }
-
-  private calculateSourceHash(directory: string): string {
-    const hash = crypto.createHash('md5');
-    const files = this.getAllFiles(directory);
-    files.forEach((file) => {
-      const content = fs.readFileSync(file);
-      hash.update(content);
-    });
-    return hash.digest('hex');
-  }
-
-  private getAllFiles(directory: string): string[] {
-    let results: string[] = [];
-    const files = fs.readdirSync(directory);
-    for (const file of files) {
-      const filePath = path.join(directory, file);
-      const stat = fs.statSync(filePath);
-      if (stat.isDirectory()) {
-        results = results.concat(this.getAllFiles(filePath));
-      } else {
-        results.push(filePath);
-      }
-    }
-    return results;
   }
 }
 

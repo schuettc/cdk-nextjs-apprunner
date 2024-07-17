@@ -21,7 +21,7 @@ jobs:
           node-version: "18"
       - run: yarn install --check-files --frozen-lockfile
         working-directory: site
-      - run: yarn upgrade
+      - run: npx projen upgrade
         working-directory: site
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4

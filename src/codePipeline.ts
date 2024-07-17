@@ -5,7 +5,7 @@ import {
   Project,
   Source,
 } from 'aws-cdk-lib/aws-codebuild';
-import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
+import { Artifact, Pipeline, PipelineType } from 'aws-cdk-lib/aws-codepipeline';
 import {
   CodeBuildAction,
   S3SourceAction,
@@ -89,6 +89,7 @@ export class CodePipelineResources extends Construct {
     const buildOutput = new Artifact();
 
     this.pipeline = new Pipeline(this, 'Pipeline', {
+      pipelineType: PipelineType.V2,
       stages: [
         {
           stageName: 'Source',

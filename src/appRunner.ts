@@ -5,7 +5,6 @@ import { ECRRepositoryResources } from './ecrRepository';
 
 interface AppRunnerResourcesProps {
   ecrRepository: ECRRepositoryResources;
-  sourceHash: string;
 }
 
 export class AppRunnerResources extends Construct {
@@ -32,6 +31,5 @@ export class AppRunnerResources extends Construct {
     });
 
     this.service.addEnvironmentVariable('HOSTNAME', '0.0.0.0');
-    // this.service.addEnvironmentVariable('SOURCE_HASH', sourceHash);
   }
 }
