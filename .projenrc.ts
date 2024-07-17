@@ -87,6 +87,7 @@ const site = new web.NextJsTypeScriptProject({
     ],
     exclude: ['node_modules'],
   },
+  devDeps: ['ts-node'],
   deps: ['@cloudscape-design/components', '@cloudscape-design/global-styles'],
 });
 
