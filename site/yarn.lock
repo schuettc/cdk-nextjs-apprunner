@@ -15,17 +15,17 @@
   integrity sha512-zWvFGIJLBqmKM01xbogMSocpDI/DOLw8bpeH0+1mB7nP/M5OnkcoPtFtEvu2CZdEFUUYtKml0N+W7GI/NtIcwg==
 
 "@cloudscape-design/component-toolkit@^1.0.0-beta":
-  version "1.0.0-beta.55"
-  resolved "https://registry.yarnpkg.com/@cloudscape-design/component-toolkit/-/component-toolkit-1.0.0-beta.55.tgz#9a9d5eaadaa9ce4c90d109ae5b1421a5db7504c3"
-  integrity sha512-xHl4CrwlRlzmtNRHQPi7j6JkQspDpjK4uwMmd1++YseqJNEjKO60ykIOpYw40iN97UwOTiusxDMDL4lEPV14HQ==
+  version "1.0.0-beta.57"
+  resolved "https://registry.yarnpkg.com/@cloudscape-design/component-toolkit/-/component-toolkit-1.0.0-beta.57.tgz#57e5b5e3da58ca67edb41319e6c9da1a02d624fe"
+  integrity sha512-IWO/SDnTLcGo8bt1DySxNJvtbU7hQO771D3ceUMoXgrC/rJW2HVS0FyYdbZtHn1qIpj/+eI2hmaD6+eETMaCwQ==
   dependencies:
     "@juggle/resize-observer" "^3.3.1"
     tslib "^2.3.1"
 
-"@cloudscape-design/components@^3.0.684":
-  version "3.0.684"
-  resolved "https://registry.yarnpkg.com/@cloudscape-design/components/-/components-3.0.684.tgz#d44614882376ee185bc19713081430ed6fbdf450"
-  integrity sha512-5HXQFv4/XW0mruEloeZcLI6Rpez1cv00NyrrbXVvYqWocsYI6c5MJRTCk26zZElOoLTNoCzpbxx6/aJEmeubCA==
+"@cloudscape-design/components@^3.0.686":
+  version "3.0.686"
+  resolved "https://registry.yarnpkg.com/@cloudscape-design/components/-/components-3.0.686.tgz#9bf993830d51a2de4ce43995e078a02d8ab946c5"
+  integrity sha512-oi+e8R3cLx1vnsz0jU+t50sf/tGXFDAzFyU/9NDnSXHi4lb0b+62RkOgSML/G48BhkQL/XGj3f8gI67dSh2Z7A==
   dependencies:
     "@cloudscape-design/collection-hooks" "^1.0.0"
     "@cloudscape-design/component-toolkit" "^1.0.0-beta"
@@ -61,9 +61,9 @@
     css.escape "^1.5.1"
 
 "@cloudscape-design/theming-runtime@^1.0.0":
-  version "1.0.53"
-  resolved "https://registry.yarnpkg.com/@cloudscape-design/theming-runtime/-/theming-runtime-1.0.53.tgz#9a8104e675a03531f59a24ad8bcfe354932a9b5b"
-  integrity sha512-qkkDY1xw7kuJ/h+7+aNw1N9dUbUENOr9A8kTl0w/M+z7ekv995tfHMPiBqtdI/5aPqBZgfO5aLc+UOE1UmTJHw==
+  version "1.0.54"
+  resolved "https://registry.yarnpkg.com/@cloudscape-design/theming-runtime/-/theming-runtime-1.0.54.tgz#1c873431f676dd7b7e1f07e4f600c8c7460233e3"
+  integrity sha512-MRbrdDhdkqInzwrWBr8eMgikW7eHiDWpgw+j2YOp+rojyA91P/yn7URXkbgcCIbfpGNsJ/XFE6ftgxJ4VyvXLQ==
   dependencies:
     tslib "^2.4.0"
 
@@ -310,9 +310,9 @@
     csstype "^3.0.2"
 
 ace-builds@^1.34.0:
-  version "1.35.2"
-  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.35.2.tgz#2c26d2317ed8e378927e90e5c0d4fa17be92db79"
-  integrity sha512-06d00u4jDZx+ieI0jLlgy/uefx8kcgz7lhI0mCIFEu8NVWirH00U5IEP7tePHy4sjPsRcJUH4VbJZacoit2Hng==
+  version "1.35.3"
+  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.35.3.tgz#f1250d43df1f534dd2ed565b389d2d591e7bfdc3"
+  integrity sha512-4cHLy+4L3FHOTis4IrDYsHZYhyYrIqtmA4HRiRXcxLTpmjQMbJ6Vutoc3c2uC9xS11g/rDwqcw+3zXHPSHD/qw==
 
 acorn-walk@^8.1.1:
   version "8.3.3"
@@ -641,9 +641,9 @@ intl-messageformat@^10.3.1:
     tslib "^2.4.0"
 
 is-core-module@^2.13.0:
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.14.0.tgz#43b8ef9f46a6a08888db67b1ffd4ec9e3dfd59d1"
-  integrity sha512-a5dFJih5ZLYlRtDc0dZWP7RiKr6xIKzmn/oAYCDvdLThadVgyJwlaoQPmRtMSpz+rk0OGAgIu+TcM9HUF0fk1A==
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.15.0.tgz#71c72ec5442ace7e76b306e9d48db361f22699ea"
+  integrity sha512-Dd+Lb2/zvk9SKy1TGCt1wFJFo/MWBPMX5x7KcvLajWTGuomczdQX61PvY5yK6SVACwpoexWo81IfFyoKY2QnTA==
   dependencies:
     hasown "^2.0.2"
 
