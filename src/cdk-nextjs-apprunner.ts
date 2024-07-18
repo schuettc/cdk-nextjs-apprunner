@@ -1,5 +1,3 @@
-import { App, CfnOutput, Stack, StackProps, IgnoreMode } from 'aws-cdk-lib';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
 import { config } from 'dotenv';
 import {
@@ -8,6 +6,8 @@ import {
   CodePipelineResources,
   ImageAvailabilityChecker,
 } from '.';
+import { App, CfnOutput, Stack, StackProps, IgnoreMode } from 'aws-cdk-lib';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 config();
 
 export class NextJSAppRunner extends Stack {

@@ -1,6 +1,14 @@
 {
   "dependencies": [
     {
+      "name": "@aws-sdk/client-sso-oidc",
+      "type": "build"
+    },
+    {
+      "name": "@aws-sdk/client-sts",
+      "type": "build"
+    },
+    {
       "name": "@types/node",
       "version": "^18",
       "type": "build"

@@ -1,20 +1,20 @@
-import { web, IgnoreFile } from 'projen';
-const { awscdk } = require('projen');
-const { JobPermission } = require('projen/lib/github/workflows-model');
-const { UpgradeDependenciesSchedule } = require('projen/lib/javascript');
+import { web, IgnoreFile, awscdk } from 'projen';
+import { JobPermission } from 'projen/lib/github/workflows-model';
+import {
+  NodePackageManager,
+  UpgradeDependenciesSchedule,
+} from 'projen/lib/javascript';
 // const AUTOMATION_TOKEN = 'PROJEN_GITHUB_TOKEN';
 
 const project = new awscdk.AwsCdkTypeScriptApp({
   cdkVersion: '2.118.0',
   license: 'MIT-0',
-  author: 'Court Schuett',
   copyrightOwner: 'Court Schuett',
-  authorAddress: 'https://subaud.io',
   appEntrypoint: 'cdk-nextjs-apprunner.ts',
   jest: false,
+  packageManager: NodePackageManager.YARN_BERRY,
   projenrcTs: true,
   depsUpgradeOptions: {
-    ignoreProjen: false,
     workflowOptions: {
       labels: ['auto-approve', 'auto-merge'],
       schedule: UpgradeDependenciesSchedule.WEEKLY,
@@ -25,9 +25,10 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     allowedUsernames: ['schuettc'],
   },
   autoApproveUpgrades: true,
-  projenUpgradeSecret: 'PROJEN_GITHUB_TOKEN',
+  // projenUpgradeSecret: 'PROJEN_GITHUB_TOKEN',
   defaultReleaseBranch: 'main',
   name: 'cdk-nextjs-apprunner',
+  devDeps: ['@aws-sdk/client-sts', '@aws-sdk/client-sso-oidc'],
   deps: [
     'dotenv',
     '@aws-cdk/aws-apprunner-alpha',
@@ -48,7 +49,7 @@ project.tsconfigDev.file.addOverride('include', [
   './.projenrc.ts',
 ]);
 
-project.eslint.addOverride({
+project.eslint!.addOverride({
   files: ['src/resources/**/*.ts'],
   rules: {
     'indent': 'off',
@@ -56,7 +57,7 @@ project.eslint.addOverride({
   },
 });
 
-project.eslint.addOverride({
+project.eslint!.addOverride({
   files: ['src/resources/**/*.ts', 'src/*.ts', 'site/src/**/*.tsx'],
   rules: {
     '@typescript-eslint/no-require-imports': 'off',
@@ -155,7 +156,7 @@ new IgnoreFile(site, '.dockerignore', {
 });
 
 // site.synth();
-const upgradeSite = project.github.addWorkflow('upgrade-site');
+const upgradeSite = project.github!.addWorkflow('upgrade-site');
 upgradeSite.on({ schedule: [{ cron: '0 0 * * 1' }], workflowDispatch: {} });
 
 upgradeSite.addJobs({
@@ -178,11 +179,11 @@ upgradeSite.addJobs({
       },
       {
         name: 'Install root project dependencies',
-        run: 'yarn install --frozen-lockfile',
+        run: 'yarn install --immutable',
       },
       {
         name: 'Install site project dependencies',
-        run: 'yarn install --frozen-lockfile',
+        run: 'yarn install --immutable',
         workingDirectory: 'site',
       },
       {
@@ -209,7 +210,7 @@ upgradeSite.addJobs({
   },
 });
 
-const cdkDeploy = project.github.addWorkflow('cdk-deploy');
+const cdkDeploy = project.github!.addWorkflow('cdk-deploy');
 cdkDeploy.on({
   push: { branches: ['main'] },
   pullRequest: { branches: ['main'], types: ['closed'] },
@@ -258,5 +259,5 @@ cdkDeploy.addJobs({
 });
 
 project.gitignore.exclude(...common_exclude);
-
+// site.synth();
 project.synth();
