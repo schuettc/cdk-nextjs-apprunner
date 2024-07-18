@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Repository, RepositoryProps } from 'aws-cdk-lib/aws-ecr';
+import { Construct } from 'constructs';
 
 export class ECRRepositoryResources extends Construct {
   public readonly repository: Repository;

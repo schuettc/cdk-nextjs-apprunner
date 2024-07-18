@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { ECRRepositoryResources } from './ecrRepository';
 import * as apprunnerAlpha from '@aws-cdk/aws-apprunner-alpha';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
+import { ECRRepositoryResources } from './ecrRepository';
 
 interface AppRunnerResourcesProps {
   ecrRepository: ECRRepositoryResources;

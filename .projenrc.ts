@@ -12,7 +12,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   copyrightOwner: 'Court Schuett',
   appEntrypoint: 'cdk-nextjs-apprunner.ts',
   jest: false,
-  packageManager: NodePackageManager.YARN_BERRY,
+  packageManager: NodePackageManager.YARN_CLASSIC,
   projenrcTs: true,
   depsUpgradeOptions: {
     workflowOptions: {
@@ -179,11 +179,11 @@ upgradeSite.addJobs({
       },
       {
         name: 'Install root project dependencies',
-        run: 'yarn install --immutable',
+        run: 'yarn install --frozen-lockfile',
       },
       {
         name: 'Install site project dependencies',
-        run: 'yarn install --immutable',
+        run: 'yarn install --frozen-lockfile',
         workingDirectory: 'site',
       },
       {
@@ -235,7 +235,7 @@ cdkDeploy.addJobs({
           'node-version': '18',
         },
       },
-      { run: 'yarn install --immutable' },
+      { run: 'yarn install --frozen-lockfile' },
       {
         name: 'Configure AWS Credentials',
         uses: 'aws-actions/configure-aws-credentials@v4',

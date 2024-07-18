@@ -1,5 +1,3 @@
-import { Construct } from 'constructs';
-import { ECRRepositoryResources } from './ecrRepository';
 import { Stack } from 'aws-cdk-lib';
 import {
   BuildSpec,
@@ -14,6 +12,8 @@ import {
 } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { Construct } from 'constructs';
+import { ECRRepositoryResources } from './ecrRepository';
 
 interface CodePipelineResourcesProps {
   ecrRepository: ECRRepositoryResources;

@@ -15,7 +15,6 @@
     ".projen/deps.json",
     ".projen/files.json",
     ".projen/tasks.json",
-    ".yarnrc.yml",
     "cdk.json",
     "LICENSE",
     "tsconfig.dev.json",

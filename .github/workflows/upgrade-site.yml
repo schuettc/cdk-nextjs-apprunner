@@ -20,9 +20,9 @@ jobs:
         with:
           node-version: "18"
       - name: Install root project dependencies
-        run: yarn install --immutable
+        run: yarn install --frozen-lockfile
       - name: Install site project dependencies
-        run: yarn install --immutable
+        run: yarn install --frozen-lockfile
         working-directory: site
       - name: Upgrade site project
         run: npx projen upgrade

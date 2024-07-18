@@ -1,11 +1,11 @@
-import { Construct } from 'constructs';
-import { CodePipelineResources } from './codePipeline';
-import { ECRRepositoryResources } from './ecrRepository';
 import { CustomResource, Duration } from 'aws-cdk-lib';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Provider } from 'aws-cdk-lib/custom-resources';
+import { Construct } from 'constructs';
+import { CodePipelineResources } from './codePipeline';
+import { ECRRepositoryResources } from './ecrRepository';
 
 interface ImageAvailabilityCheckerProps {
   pipeline: CodePipelineResources;
