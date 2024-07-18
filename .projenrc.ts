@@ -235,7 +235,7 @@ cdkDeploy.addJobs({
           'node-version': '18',
         },
       },
-      { run: 'yarn install --frozen-lockfile' },
+      { run: 'yarn install --immutable' },
       {
         name: 'Configure AWS Credentials',
         uses: 'aws-actions/configure-aws-credentials@v4',
