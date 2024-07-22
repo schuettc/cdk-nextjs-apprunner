@@ -22,12 +22,12 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "constructs": "^10.0.0",
-    "projen": "^0.84.5",
+    "projen": "^0.84.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@cloudscape-design/components": "^3.0.686",
+    "@cloudscape-design/components": "^3.0.687",
     "@cloudscape-design/global-styles": "^1.0.31",
     "next": "^14.2.5",
     "react": "^18.3.1",
