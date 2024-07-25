@@ -15,17 +15,17 @@
   integrity sha512-zWvFGIJLBqmKM01xbogMSocpDI/DOLw8bpeH0+1mB7nP/M5OnkcoPtFtEvu2CZdEFUUYtKml0N+W7GI/NtIcwg==
 
 "@cloudscape-design/component-toolkit@^1.0.0-beta":
-  version "1.0.0-beta.57"
-  resolved "https://registry.yarnpkg.com/@cloudscape-design/component-toolkit/-/component-toolkit-1.0.0-beta.57.tgz#57e5b5e3da58ca67edb41319e6c9da1a02d624fe"
-  integrity sha512-IWO/SDnTLcGo8bt1DySxNJvtbU7hQO771D3ceUMoXgrC/rJW2HVS0FyYdbZtHn1qIpj/+eI2hmaD6+eETMaCwQ==
+  version "1.0.0-beta.58"
+  resolved "https://registry.yarnpkg.com/@cloudscape-design/component-toolkit/-/component-toolkit-1.0.0-beta.58.tgz#d9477cac1043061e70354bed5d16ea2bacf58226"
+  integrity sha512-UE+4mMQ67AF22u7BWU9WlBpTBY1dFkNrrZmJfs8TUN4tSm3SO7jXYYkTlpk0iJ+UFW1KVw6gnC2oLtRsG4R3Sw==
   dependencies:
     "@juggle/resize-observer" "^3.3.1"
     tslib "^2.3.1"
 
-"@cloudscape-design/components@^3.0.686":
-  version "3.0.686"
-  resolved "https://registry.yarnpkg.com/@cloudscape-design/components/-/components-3.0.686.tgz#9bf993830d51a2de4ce43995e078a02d8ab946c5"
-  integrity sha512-oi+e8R3cLx1vnsz0jU+t50sf/tGXFDAzFyU/9NDnSXHi4lb0b+62RkOgSML/G48BhkQL/XGj3f8gI67dSh2Z7A==
+"@cloudscape-design/components@^3.0.687":
+  version "3.0.687"
+  resolved "https://registry.yarnpkg.com/@cloudscape-design/components/-/components-3.0.687.tgz#582231e5e6bbf9529aa0390e37613a2fcd5c962e"
+  integrity sha512-YWeh5UsxEVJQIqw/FbjrnCLVa9iQT15Y6/o1pgtDiMOHefl2rsRyF7Cl1GWgqt+Epr4pxNiQxBzObrZu8DrOGw==
   dependencies:
     "@cloudscape-design/collection-hooks" "^1.0.0"
     "@cloudscape-design/component-toolkit" "^1.0.0-beta"
@@ -285,9 +285,9 @@
   integrity sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==
 
 "@types/node@^16":
-  version "16.18.102"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.102.tgz#4d8afd633a9bab39651929a7edebce430a19a74d"
-  integrity sha512-eSe2YwGCcRjqPidxfm20IAq02krERWcIIJW4FNPkU0zQLbc4L9pvhsmB0p6UJecjEf0j/E2ERHsKq7madvthKw==
+  version "16.18.103"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.103.tgz#5557c7c32a766fddbec4b933b1d5c365f89b20a4"
+  integrity sha512-gOAcUSik1nR/CRC3BsK8kr6tbmNIOTpvb1sT+v5Nmmys+Ho8YtnIHP90wEsVK4hTcHndOqPVIlehEGEA5y31bA==
 
 "@types/prop-types@*":
   version "15.7.12"
@@ -383,9 +383,9 @@ busboy@1.6.0:
     streamsearch "^1.1.0"
 
 caniuse-lite@^1.0.30001579:
-  version "1.0.30001642"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001642.tgz#6aa6610eb24067c246d30c57f055a9d0a7f8d05f"
-  integrity sha512-3XQ0DoRgLijXJErLSl+bLnJ+Et4KqV1PY6JJBGAFlsNsz31zeAIncyeZfLCabHK/jtSh+671RM9YMldxjUPZtA==
+  version "1.0.30001643"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001643.tgz#9c004caef315de9452ab970c3da71085f8241dbd"
+  integrity sha512-ERgWGNleEilSrHM6iUz/zJNSQTP8Mr21wDWpdgvRwcTXGAq6jMtOUPP4dqFPTdKqZ2wKTdtB+uucZ3MRpAUSmg==
 
 case@^1.6.3:
   version "1.6.3"
@@ -767,10 +767,10 @@ postcss@8.4.31:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-projen@^0.84.5:
-  version "0.84.5"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.84.5.tgz#ea9fdb678cf0d0e4cb73502c49d94b33bbe3cf58"
-  integrity sha512-rilBH5CPn/+NUjgQY099doLEvmVSS8KURtY07nhdjF5l72gjgIrazMIgcvXuy8+4nk5yhFviXvPL/Sy7DVoIyw==
+projen@^0.84.6:
+  version "0.84.6"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.84.6.tgz#e42066b12a635e39dd37af7e92390070373261f1"
+  integrity sha512-1U5NguoaTq8F0xipZEyjriWrHbcJrtS6NaViFNHH7ABMRBYVXcfE2GGUSn1mVaAk51n09kSDit4D0n5W0di1Hg==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
