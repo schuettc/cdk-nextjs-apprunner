@@ -19,17 +19,17 @@
   },
   "devDependencies": {
     "@types/node": "^16",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "constructs": "^10.0.0",
-    "projen": "^0.88.6",
+    "projen": "^0.91.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@cloudscape-design/components": "^3.0.805",
-    "@cloudscape-design/global-styles": "^1.0.32",
-    "next": "^14.2.16",
+    "@cloudscape-design/components": "^3.0.866",
+    "@cloudscape-design/global-styles": "^1.0.34",
+    "next": "^14.2.23",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
